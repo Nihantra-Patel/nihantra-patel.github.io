@@ -8,12 +8,20 @@
   <!-- Mobile Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
+  <meta property="og:title" content="How to Install ERPNext Version 15 in Ubuntu 22.04" />
+  <meta property="og:description" content="Learn how to set up a server and install ERPNext version 15 on Ubuntu 22.04 with this step-by-step guide. Get started easily with Frappe ERPNext installation for optimal business management" />
+  <meta property="og:url" content="https://nihantra-patel.github.io/install-erpnext-v15.html" />
+  <meta property="og:site_name" content="NCP | Blog" />
+  <meta property="og:image" content="https://nihantra-patel.github.io/images/erpnext-logo.png" />
+	<meta property="og:image:width" content="512" />
+	<meta property="og:image:height" content="512" />
+	<meta property="og:image:type" content="image/jpeg" />
+  <meta name="keywords" content="ERPNext version 15 installation, ERPNext install in ubuntu, install ERPNext, Frappe ERPNext v15 setup, Frappe ERPNext installation, Frappe, ERPNext, Frappe ERPNext" />
+  <meta name="description" content="Discover how to effortlessly set up your server and deploy ERPNext version 15 on Ubuntu 22.04 with this comprehensive step-by-step guide. Learn the ins and outs of installation for Frappe ERPNext v15 to streamline your business operations." />
+  <meta name="author" content="Nihantra Patel | NCP" />
   <link rel="shortcut icon" href="images/erpnext-logo.png" type="">
 
-  <title> NCP | Blog </title>
+  <title>Install ERPNext Version 15 in Ubuntu 22.04</title>
 
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
@@ -172,17 +180,27 @@
     <div class="service_container">
       <div class="heading_container heading_center">
         <h2>
-          HOW TO INSTALL <span>ERPNext VERSION 15</span> IN UBUNTU 22.04
+          How To Install <span>ERPNext Version 15</span> In Ubuntu 22.04
         </h2>
       </div><br>
     <div class="detail-box" style="margin: 10px;">
       <p>In this guide, we'll walk through the process of installing ERPNext version 15 on Ubuntu 22.04, step by step, making it easy for you to set up your environment.</p>
       <p><strong>Prerequisites:</strong></p>
       <p>Before we begin, ensure you have the following in place for optimal functionality:</p>
-      <p><strong>Software Requirements:</strong></p>
-      <ul><li>Updated Ubuntu 22.04</li><li>A user with sudo privileges</li><li>Python 3.10+</li><li>Node.js 18</li></ul>
+      <p><strong>System Requirements:</strong></p>
+      <ul><li>Updated Ubuntu 22.04</li><li>A user with sudo privileges</li></ul>
       <p><strong>Hardware Requirements:</strong></p>
       <ul><li>4GB RAM</li><li>40GB Hard Disk</li></ul>
+      <p><strong>Pre-requisites:</strong></p>
+      <ul><li>Python 3.10 or Python 3.11</li><li>Node.js 18</li><li>MariaDB 10.6.6+</li>
+        <br><p>Common for all Frappe versions:</p>
+        <li>Redis 6 (caching and realtime updates)</li>
+        <li>yarn 1.12+ (js dependency manager)</li>
+        <li>pip 20+ (py dependency manager)</li>
+        <li>wkhtmltopdf (version 0.12.5 with patched qt) (for pdf generation)</li>
+        <li>cron (bench's scheduled jobs: automated certificate renewal, scheduled backups)</li>
+        <li>NGINX (proxying multitenant sites in production)</li>
+      </ul>
     </div>
       <div class='K2_CBox responsive_main_content'>
         <div class='CB_Heading'>
