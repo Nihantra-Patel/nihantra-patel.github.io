@@ -1,4 +1,20 @@
 (function () {
+  var THEME_KEY = "nihantra-patel-theme";
+  var root = document.documentElement;
+  var btn = document.getElementById("theme-toggle");
+  var saved = localStorage.getItem(THEME_KEY);
+  if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+
+  btn.addEventListener("click", function () {
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var current = root.getAttribute("data-theme") || (prefersDark ? "dark" : "light");
+    var next = current === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+})();
+
+(function () {
   var els = document.querySelectorAll("section.block");
   if (!("IntersectionObserver" in window)) {
     els.forEach(function (e) { e.classList.add("in-view"); });
@@ -26,7 +42,7 @@
       .catch(function () { cb(null); });
   }
   function read(counter, cb) {
-    fetch(API + counter)
+    fetch(API + counter + "/")
       .then(function (r) { return r.json(); })
       .then(function (d) { cb(d.count); })
       .catch(function () { cb(null); });
@@ -42,8 +58,7 @@
   var likeBtn = document.getElementById("like-btn");
   var likeCount = document.getElementById("like-count");
   read("likes", function (v) {
-    if (v == null) { likeBtn.setAttribute("data-hidden", "1"); return; }
-    likeCount.textContent = v.toLocaleString();
+    if (v != null) likeCount.textContent = v.toLocaleString();
   });
 
   if (localStorage.getItem(LIKED_KEY) === "1") {
