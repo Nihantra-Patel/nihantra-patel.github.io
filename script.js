@@ -24,7 +24,7 @@
     text.split("").forEach(function (ch, i) {
       var span = document.createElement("span");
       span.className = "char";
-      span.textContent = ch === " " ? " " : ch;
+      span.textContent = ch === " " ? " " : ch;
       if (!reduced) {
         span.style.transitionDelay = (i * 14) + "ms";
       } else {
