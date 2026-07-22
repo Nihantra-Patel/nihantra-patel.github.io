@@ -163,12 +163,12 @@ a{color:inherit}
 .tl-row{
   position:relative;width:100%;display:grid;
   grid-template-columns:1fr 1fr;
-  padding:56px 0;
+  padding:22px 0;
 }
-.tl-row:first-child{padding-top:8px}
-.tl-row:last-child{padding-bottom:8px}
+.tl-row:first-child{padding-top:4px}
+.tl-row:last-child{padding-bottom:4px}
 .tl-row::before{
-  content:"";position:absolute;left:50%;top:60px;
+  content:"";position:absolute;left:50%;top:26px;
   width:9px;height:9px;border-radius:50%;background:var(--text-faint);
   transform:translateX(-50%);z-index:1;
 }
