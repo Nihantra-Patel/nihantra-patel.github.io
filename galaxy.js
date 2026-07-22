@@ -10,16 +10,18 @@
   function rand(min, max) { return Math.random() * (max - min) + min; }
 
   function makeStars() {
-    var count = Math.round((w * h) / 2600);
+    var count = Math.round((w * h) / 2200);
     var arr = [];
     for (var i = 0; i < count; i++) {
+      var bright = Math.random() < 0.12;
       arr.push({
         x: rand(0, w),
         y: rand(0, h),
-        r: rand(0.4, 1.5),
-        baseAlpha: rand(0.25, 0.95),
+        r: bright ? rand(1.4, 2.4) : rand(0.4, 1.3),
+        baseAlpha: bright ? rand(0.7, 1) : rand(0.2, 0.75),
         phase: rand(0, Math.PI * 2),
-        speed: rand(0.4, 1.4)
+        speed: rand(0.5, 2.2),
+        bright: bright
       });
     }
     return arr;
@@ -81,7 +83,17 @@
     ctx.globalCompositeOperation = "source-over";
 
     stars.forEach(function (s) {
-      var a = s.baseAlpha * (0.6 + 0.4 * Math.sin(t * 0.01 * s.speed + s.phase));
+      var twinkle = Math.sin(t * 0.02 * s.speed + s.phase);
+      var a = s.baseAlpha * (0.35 + 0.65 * ((twinkle + 1) / 2));
+      if (s.bright) {
+        var glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+        glow.addColorStop(0, "rgba(255,255,255," + (a * 0.5).toFixed(3) + ")");
+        glow.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.fillStyle = "rgba(255,255,255," + a.toFixed(3) + ")";
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
