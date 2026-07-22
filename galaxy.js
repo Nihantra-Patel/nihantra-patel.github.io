@@ -5,43 +5,46 @@
 
   var ctx = canvas.getContext("2d");
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
-  var w, h, stars, planets;
+  var w, h;
+  var layers = [];
+  var nebulae = [];
 
   function rand(min, max) { return Math.random() * (max - min) + min; }
 
-  function makeStars() {
-    var count = Math.round((w * h) / 2200);
+  function makeStarLayer(count, rMin, rMax, aMin, aMax, speed) {
     var arr = [];
     for (var i = 0; i < count; i++) {
-      var bright = Math.random() < 0.12;
       arr.push({
         x: rand(0, w),
         y: rand(0, h),
-        r: bright ? rand(1.4, 2.4) : rand(0.4, 1.3),
-        baseAlpha: bright ? rand(0.7, 1) : rand(0.2, 0.75),
+        r: rand(rMin, rMax),
+        baseAlpha: rand(aMin, aMax),
         phase: rand(0, Math.PI * 2),
-        speed: rand(0.5, 2.2),
-        bright: bright
+        twinkleSpeed: rand(0.4, 1.6),
+        driftX: rand(-speed, speed),
+        driftY: rand(-speed * 0.4, speed * 0.4)
       });
     }
     return arr;
   }
 
-  function makePlanets() {
+  function makeNebulae() {
     var palette = [
-      "rgba(216,122,99,0.35)",
-      "rgba(122,155,216,0.28)",
-      "rgba(160,120,200,0.26)"
+      { c1: "rgba(88,63,140,0.22)", c2: "rgba(40,20,70,0)" },
+      { c1: "rgba(40,90,140,0.16)", c2: "rgba(15,35,60,0)" },
+      { c1: "rgba(150,70,100,0.14)", c2: "rgba(60,20,40,0)" }
     ];
     var arr = [];
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 4; i++) {
+      var p = palette[i % palette.length];
       arr.push({
         x: rand(0, w),
         y: rand(0, h),
-        r: rand(60, 160),
-        color: palette[i % palette.length],
-        dx: rand(-0.02, 0.02),
-        dy: rand(-0.015, 0.015)
+        r: rand(Math.min(w, h) * 0.35, Math.min(w, h) * 0.7),
+        c1: p.c1,
+        c2: p.c2,
+        dx: rand(-0.015, 0.015),
+        dy: rand(-0.01, 0.01)
       });
     }
     return arr;
@@ -55,49 +58,68 @@
     canvas.style.width = w + "px";
     canvas.style.height = h + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    stars = makeStars();
-    planets = makePlanets();
+
+    var density = (w * h) / 1000000;
+    layers = [
+      makeStarLayer(Math.round(90 * density), 0.3, 0.8, 0.15, 0.5, 0.02),
+      makeStarLayer(Math.round(60 * density), 0.6, 1.3, 0.35, 0.8, 0.05),
+      makeStarLayer(Math.round(24 * density), 1.1, 2.2, 0.55, 1, 0.09)
+    ];
+    nebulae = makeNebulae();
   }
 
   var t = 0;
   function frame() {
     t += 1;
-    ctx.clearRect(0, 0, w, h);
+
+    ctx.fillStyle = "#04050b";
+    ctx.fillRect(0, 0, w, h);
 
     ctx.globalCompositeOperation = "lighter";
-    planets.forEach(function (p) {
-      p.x += p.dx;
-      p.y += p.dy;
-      if (p.x < -p.r) p.x = w + p.r;
-      if (p.x > w + p.r) p.x = -p.r;
-      if (p.y < -p.r) p.y = h + p.r;
-      if (p.y > h + p.r) p.y = -p.r;
-      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
-      grad.addColorStop(0, p.color);
-      grad.addColorStop(1, "rgba(0,0,0,0)");
+    nebulae.forEach(function (n) {
+      n.x += n.dx;
+      n.y += n.dy;
+      if (n.x < -n.r) n.x = w + n.r;
+      if (n.x > w + n.r) n.x = -n.r;
+      if (n.y < -n.r) n.y = h + n.r;
+      if (n.y > h + n.r) n.y = -n.r;
+      var grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+      grad.addColorStop(0, n.c1);
+      grad.addColorStop(1, n.c2);
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
       ctx.fill();
     });
     ctx.globalCompositeOperation = "source-over";
 
-    stars.forEach(function (s) {
-      var twinkle = Math.sin(t * 0.02 * s.speed + s.phase);
-      var a = s.baseAlpha * (0.35 + 0.65 * ((twinkle + 1) / 2));
-      if (s.bright) {
-        var glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
-        glow.addColorStop(0, "rgba(255,255,255," + (a * 0.5).toFixed(3) + ")");
-        glow.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = glow;
+    layers.forEach(function (stars) {
+      stars.forEach(function (s) {
+        s.x += s.driftX;
+        s.y += s.driftY;
+        if (s.x < 0) s.x = w;
+        if (s.x > w) s.x = 0;
+        if (s.y < 0) s.y = h;
+        if (s.y > h) s.y = 0;
+
+        var twinkle = Math.sin(t * 0.02 * s.twinkleSpeed + s.phase);
+        var a = s.baseAlpha * (0.5 + 0.5 * ((twinkle + 1) / 2));
+
+        if (s.r > 1.4) {
+          var glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 5);
+          glow.addColorStop(0, "rgba(210,225,255," + (a * 0.35).toFixed(3) + ")");
+          glow.addColorStop(1, "rgba(210,225,255,0)");
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r * 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = "rgba(255,255,255," + a.toFixed(3) + ")";
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
-      }
-      ctx.fillStyle = "rgba(255,255,255," + a.toFixed(3) + ")";
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
+      });
     });
 
     requestAnimationFrame(frame);
