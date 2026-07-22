@@ -6,8 +6,7 @@
   if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
 
   btn.addEventListener("click", function () {
-    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    var current = root.getAttribute("data-theme") || (prefersDark ? "dark" : "light");
+    var current = root.getAttribute("data-theme") || "dark";
     var next = current === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
     localStorage.setItem(THEME_KEY, next);
@@ -15,20 +14,84 @@
 })();
 
 (function () {
-  var els = document.querySelectorAll("section.block");
-  if (!("IntersectionObserver" in window)) {
-    els.forEach(function (e) { e.classList.add("in-view"); });
-    return;
-  }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("in-view");
-        io.unobserve(entry.target);
-      }
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (typeof Lenis === "undefined" || typeof gsap === "undefined") return;
+
+  var lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0);
+})();
+
+(function () {
+  var heroLines = document.querySelectorAll(".hero h1 .line");
+  if (!heroLines.length) return;
+
+  heroLines.forEach(function (line) {
+    var text = line.textContent;
+    line.textContent = "";
+    text.split("").forEach(function (ch) {
+      var span = document.createElement("span");
+      span.className = "char";
+      span.textContent = ch === " " ? " " : ch;
+      line.appendChild(span);
     });
-  }, { threshold: 0.15 });
-  els.forEach(function (e) { io.observe(e); });
+  });
+
+  var chars = document.querySelectorAll(".hero h1 .char");
+  if (typeof gsap !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    gsap.set(chars, { yPercent: 120, opacity: 0 });
+    gsap.to(chars, {
+      yPercent: 0, opacity: 1, duration: 0.9, ease: "power4.out",
+      stagger: 0.012, delay: 0.15
+    });
+  } else {
+    chars.forEach(function (c) { c.style.opacity = 1; });
+  }
+})();
+
+(function () {
+  var els = document.querySelectorAll(".reveal");
+  if (!els.length) return;
+
+  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    els.forEach(function (el) {
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 85%",
+        onEnter: function () { el.classList.add("in"); }
+      });
+    });
+  } else if (!("IntersectionObserver" in window)) {
+    els.forEach(function (e) { e.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { entry.target.classList.add("in"); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(function (e) { io.observe(e); });
+  }
+})();
+
+(function () {
+  if (window.matchMedia("(hover: none)").matches) return;
+  var magnets = document.querySelectorAll("[data-magnet]");
+  magnets.forEach(function (el) {
+    el.addEventListener("mousemove", function (e) {
+      var r = el.getBoundingClientRect();
+      var x = (e.clientX - r.left - r.width / 2) * 0.25;
+      var y = (e.clientY - r.top - r.height / 2) * 0.25;
+      el.style.transform = "translate(" + x + "px," + y + "px)";
+    });
+    el.addEventListener("mouseleave", function () {
+      el.style.transform = "translate(0,0)";
+    });
+  });
 })();
 
 (function () {
@@ -51,7 +114,7 @@
   var visitLine = document.getElementById("visit-line");
   var visitCount = document.getElementById("visit-count");
   bump("visits", function (v) {
-    if (v == null) { visitLine.setAttribute("data-hidden", "1"); return; }
+    if (v == null) { visitLine.style.display = "none"; return; }
     visitCount.textContent = v.toLocaleString();
   });
 
