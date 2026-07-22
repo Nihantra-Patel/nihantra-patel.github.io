@@ -191,7 +191,7 @@ a{color:inherit}
 }
 .tag.gold{color:var(--warn);border-color:var(--warn)}
 
-.repo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.repo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .repo-card{
   background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
   padding:22px;text-decoration:none;color:inherit;display:block;
