@@ -172,9 +172,7 @@ a{color:inherit}
   transform:translateX(-50%);z-index:1;
 }
 .tl-row.right{justify-content:flex-start}
-.tl-side{width:calc(50% - 40px)}
-.tl-row:not(.right) .tl-side{text-align:right}
-.tl-row.right .tl-side{text-align:left}
+.tl-side{width:calc(50% - 40px);text-align:left}
 .tl-year{
   font-family:var(--mono);font-size:12.5px;color:var(--text-faint);
   display:block;margin-bottom:8px;
@@ -184,7 +182,6 @@ a{color:inherit}
 .tl-link{color:var(--text);text-decoration:none;border-bottom:1px solid var(--border-hi);transition:color .2s ease,border-color .2s ease}
 .tl-link:hover{color:var(--accent);border-color:var(--accent)}
 .tl-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.tl-row:not(.right) .tl-tags{justify-content:flex-end}
 .tag{
   font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:100px;
   border:1px solid var(--border-hi);color:var(--text-dim);
@@ -242,8 +239,7 @@ footer.colophon{
   .timeline::before{left:8px;transform:none}
   .tl-row,.tl-row.right{justify-content:flex-start;padding-left:30px}
   .tl-row::before{left:8px;transform:translateX(-50%)}
-  .tl-side,.tl-row.right .tl-side{width:100%;text-align:left}
-  .tl-row:not(.right) .tl-tags{justify-content:flex-start}
+  .tl-side{width:100%}
   .repo-grid{grid-template-columns:1fr}
   .contact-card{grid-column:span 6}
 }
